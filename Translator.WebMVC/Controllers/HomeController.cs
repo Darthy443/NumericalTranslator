@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Translator.WebMVC.Models;
+using Translator.Library;
 
 namespace Translator.WebMVC.Controllers
 {
+    [Controller]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -23,10 +25,20 @@ namespace Translator.WebMVC.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        [HttpGet]
+        public JsonResult GetTranslatedNumber(double value_to_translate)
         {
-            return View();
+            if (value_to_translate == 0)
+            {
+                return new JsonResult("Zero");
+            }
+
+            var translator = new NumericalTranslator(value_to_translate);
+            var result = translator.GetOutput();
+
+            return new JsonResult(result);
         }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

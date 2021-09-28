@@ -1,8 +1,84 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Numerical Translator";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<button id="btnColorScheme" class="btn-toggle-color"></button>
+<div class="container">
+    <h1>Numerical Translator</h1>
+
+    <div class="text-err" id="divErrors"></div>
+
+    <div>
+        <p style="font-style: italic;">Enter the number you would like to translate: </p>
+        <span id="inputNumberValidation" class="text-validation-err"></span>
+        <input type="number" id="inputNumber" name="inputNumber" min="-100000000000000" value=0 max="100000000000000" autofocus onkeyup="FetchTranslatedNumber(this)">
+        <span class="validity"></span>
+    </div>
+    <p id="txtConvertedNumber" class="answer-txt">Zero</p>
 </div>
+
+@section Scripts {
+<script>
+    const btn = document.getElementById('btnColorScheme');
+    const inputToValidate = document.getElementById('inputNumber');
+    const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+
+    function FetchTranslatedNumber(input)
+    {
+        if (isNumberValid(input.value) == false)
+        {
+            input.setCustomValidity("Invalid field.");
+            return;
+        } else
+        {
+            replaceValidationErr('');
+            input.setCustomValidity("");
+            var url = window.location.href + 'Home/GetTranslatedNumber?value_to_translate=' + input.value;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    var elToUpdate = document.getElementById('txtConvertedNumber');
+                    elToUpdate.innerText = data;
+                })
+                .catch((err) => {
+                    document.getElementById('divErrors').innerText = "There was an error attempting to contact the server. Please consult IT or check the browser console"
+                    console.log(err); 
+                })
+        }
+    }
+
+    function isNumberValid(number)
+    {
+        var numberLength = number.toString().length;
+        let maxSize = 14;
+        if (numberLength > maxSize)
+        {
+            replaceValidationErr('This number is too long to validate :(')
+            return false;
+        }
+
+        return true;
+    }
+
+    function replaceValidationErr(err)
+    {
+        var el = document.getElementById('inputNumberValidation');
+        el.innerText = err;
+    }
+
+    btn.addEventListener('click', function(){
+        if (prefersDarkScheme.matches) {
+            document.body.classList.toggle('light-theme');
+            var theme = document.body.classList.contains('light-theme') 
+                ? 'light' : 'dark';
+        } else
+        {
+            document.body.classList.toggle('dark-theme');
+            var theme = document.body.classList.contains('dark-theme') 
+                ? 'dark' : 'light';
+        }
+
+        localStorage.setItem('theme', theme);
+    })
+</script>
+}
