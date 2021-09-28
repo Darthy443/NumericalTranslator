@@ -2,16 +2,15 @@
     ViewData["Title"] = "Numerical Translator";
 }
 
-<button id="btnColorScheme" class="btn-toggle-color"></button>
 <div class="container">
     <h1>Numerical Translator</h1>
 
     <div class="text-err" id="divErrors"></div>
 
     <div>
-        <p style="font-style: italic;">Enter the number you would like to translate: </p>
-        <span id="inputNumberValidation" class="text-validation-err"></span>
-        <input type="number" id="inputNumber" name="inputNumber" min="-100000000000000" value=0 max="100000000000000" autofocus onkeyup="FetchTranslatedNumber(this)">
+        <label for="inputNumber" style="font-style: italic;">Enter the number you would like to translate: </p>
+        <p id="inputNumberValidation" class="text-err"></p>
+        <input type="number" id="inputNumber" name="inputNumber" step="any" value=0 max="100000000000000" autofocus onkeyup="FetchTranslatedNumber(this)" onchange="FetchTranslatedNumber(this)">
         <span class="validity"></span>
     </div>
     <p id="txtConvertedNumber" class="answer-txt">Zero</p>
@@ -37,8 +36,7 @@
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    var elToUpdate = document.getElementById('txtConvertedNumber');
-                    elToUpdate.innerText = data;
+                    replaceAnswerText(data);
                 })
                 .catch((err) => {
                     document.getElementById('divErrors').innerText = "There was an error attempting to contact the server. Please consult IT or check the browser console"
@@ -60,8 +58,15 @@
         return true;
     }
 
+    function replaceAnswerText(msg)
+    {
+        var elToUpdate = document.getElementById('txtConvertedNumber');
+        elToUpdate.innerText = msg;
+    }
+
     function replaceValidationErr(err)
     {
+        replaceAnswerText('');
         var el = document.getElementById('inputNumberValidation');
         el.innerText = err;
     }

@@ -47,9 +47,24 @@ h1 {
 
 .btn-toggle-color {
   position: absolute;
+  padding: 5px;
+  border-radius: 10px;
   top: 5%;
   right: 5%;
   z-index: 1;
+  color: var(--text-color);
+  font-size: small;
+}
+
+.btn-toggle-color::after {
+  position: absolute;
+  width: 20px;
+  top: 25%;
+  height: 50%;
+  background-color: var(--heading-color);
+  border-radius: 5px;
+  margin-left: 5px;
+  content: "";
 }
 
 input[type=number] {
@@ -62,16 +77,22 @@ input[type=number] {
 
 input:invalid+span:after {
   content: '✖';
+  color: #eb9e34;
   padding-left: 5px;
 }
 
 input:valid+span:after {
   content: '✓';
+  color: #96d396;
   padding-left: 5px;
 }
 
 .answer-txt {
   color: #96d396;
+}
+
+.text-err {
+  color: #eb9e34;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -99,6 +120,6 @@ h1 {
   color: var(--heading-color);
 }
 
-p {
+p, label {
   color: var(--text-color);
 }
