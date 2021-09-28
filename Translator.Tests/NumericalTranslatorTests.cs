@@ -23,10 +23,10 @@ namespace Translator.Tests
         }
 
         [Test]
-        [TestCase(1000005, "One Million Five")]
-        [TestCase(1000205, "One Million Two Hundred Five")]
-        [TestCase(6002205, "Six Million Two Thousand Two Hundred Five")]
-        [TestCase(6022205, "Six Million Twenty-Two Thousand Two Hundred Five")]
+        [TestCase(1000005, "One Million and Five")]
+        [TestCase(1000205, "One Million Two Hundred and Five")]
+        [TestCase(6002205, "Six Million and Two Thousand Two Hundred and Five")]
+        [TestCase(6022205, "Six Million and Twenty-Two Thousand Two Hundred and Five")]
         [TestCase(1000000, "One Million")]
         [TestCase(1000000000, "One Billion")]
         [TestCase((double)10000000000, "Ten Billion")]
@@ -50,8 +50,8 @@ namespace Translator.Tests
         }
 
         [Test]
-        [TestCase(1001.01, "One Thousand One and One Hundredth")]
-        [TestCase(5021000.022, "Five Million Twenty-One Thousand and Twenty-Two Thousandths")]
+        [TestCase(1001.01, "One Thousand and One and One Hundredth")]
+        [TestCase(5021000.022, "Five Million and Twenty-One Thousand and Twenty-Two Thousandths")]
         [TestCase(-70000.0, "Negative Seventy Thousand")]
         [TestCase(-70000.0005, "Negative Seventy Thousand and Five Ten-Thousandths")]
         public void ParseNumberWithWholeAndDecimal(double input, string expected_output)

@@ -27,7 +27,7 @@ namespace Translator.Library
 
                 this._WholePortion = Math.Truncate(number_to_parse);
 
-                // Casted to decimal first as it removes any input given in scientific notation.
+                // Casted to decimal first as it replaces any input given in scientific notation.
                 var splitInput = ((decimal)number_to_parse).ToString(CultureInfo.InvariantCulture).Split('.');
                 if (splitInput.Count() == 2)
                 {
@@ -49,7 +49,6 @@ namespace Translator.Library
                 var wholeNumResult = ParseWholeNumber(this._WholePortion);
                 if (!string.IsNullOrWhiteSpace(wholeNumResult))
                 {
-                    wholeNumResult = CleanupOutput(wholeNumResult);
                     result += wholeNumResult;
                 }
             }
@@ -61,7 +60,6 @@ namespace Translator.Library
                     var decimalNumResult = ParseWholeNumber(convertedToDouble);
                     if (!string.IsNullOrWhiteSpace(decimalNumResult))
                     {
-                        decimalNumResult = CleanupOutput(decimalNumResult);
                         if (convertedToDouble == 1)
                         {
                             decimalNumResult += BaseTenHelperMethods.GetBaseTenName(this._DecimalPortion.Length) + "th";
@@ -90,29 +88,18 @@ namespace Translator.Library
             }
         }
 
-        private string CleanupOutput(string output_to_clean)
-        {
-            output_to_clean = output_to_clean.TrimStart();
-            output_to_clean = output_to_clean.TrimEnd();
-            if (output_to_clean.StartsWith("and"))
-            {
-                output_to_clean = output_to_clean.Substring(4);
-            }
-            return output_to_clean;
-        }
-
         private string ParseWholeNumber(double input, int block_of_thousand = 0)
         {
             if (input < 1000)
             {
-                var result = ParseWholeNumberLessThanThousand(input);
+                var result = ParseWholeNumberLessThanThousand(input, false);
                 if (!string.IsNullOrWhiteSpace(result))
                 {
                     return $"{result}{BaseTenHelperMethods.GetBaseTenName(block_of_thousand)}";
                 }
             }
 
-            string chunk = ParseWholeNumberLessThanThousand(input % 1000);
+            string chunk = ParseWholeNumberLessThanThousand(input % 1000, true);
             if (!string.IsNullOrWhiteSpace(chunk))
             {
                 chunk = " " + chunk + BaseTenHelperMethods.GetBaseTenName(block_of_thousand);
@@ -120,37 +107,48 @@ namespace Translator.Library
             return ParseWholeNumber(input / 1000, block_of_thousand += 3) + chunk;
         }
 
-        private static string ParseWholeNumberLessThanThousand(double input)
+        private static string ParseWholeNumberLessThanThousand(double input, bool requires_appending_to_output)
         {
+            string output = "";
             switch ((int)input)
             {
                 case 0:
                     return "";
                 case var val when input < 10:
-                    return $" and {BaseTenHelperMethods.GetTensValue(val)}";
+                {
+                    output = $"{BaseTenHelperMethods.GetTensValue(val)}";
+                    break;
+                }
                 case var val when input < 20:
-                    return $" and {BaseTenHelperMethods.GetTeensValue(val)}";
+                {
+                    output = $"{BaseTenHelperMethods.GetTeensValue(val)}";
+                    break;
+                }
                 case var val when input < 100:
-                    {
-                        var hundreds = BaseTenHelperMethods.GetHundredsValue(val / 10);
-                        var tens = BaseTenHelperMethods.GetTensValue(val % 10);
+                {
+                    output = BaseTenHelperMethods.GetHundredsValue(val / 10);
+                    var tens = BaseTenHelperMethods.GetTensValue(val % 10);
 
-                        if (!string.IsNullOrWhiteSpace(tens))
-                        {
-                            return $" and {hundreds}-{tens}";
-                        }
-                        else
-                        {
-                            return $" and {hundreds}";
-                        }
-                    }
-                case var val when input < 1000:
+                    if (!string.IsNullOrWhiteSpace(tens))
                     {
-                        return $"{BaseTenHelperMethods.GetTensValue(val / 100)} Hundred" + ParseWholeNumberLessThanThousand(val - (100 * (val / 100)));
+                        output += $"-{tens}";
                     }
+                    break;
+                }
+                case var val when input < 1000:
+                {
+                    return $"{BaseTenHelperMethods.GetTensValue(val / 100)} Hundred " + 
+                                ParseWholeNumberLessThanThousand(val - (100 * (val / 100)), true);
+                }
                 default:
                     throw new ArgumentException("Invalid number given. This is written to accept < 1000");
             }
+
+            if (requires_appending_to_output)
+            {
+                output = $"and {output}";
+            }
+            return output;
         }
     }
 }
