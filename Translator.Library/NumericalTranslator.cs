@@ -2,7 +2,6 @@
 using Translator.Library.HelperMethods;
 using System.Linq;
 using System.Globalization;
-using System.Collections.Generic;
 
 namespace Translator.Library
 {
@@ -53,29 +52,15 @@ namespace Translator.Library
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(this._DecimalPortion))
+            var fractionalComponent = OutputFractionalComponent();
+            if (!string.IsNullOrWhiteSpace(fractionalComponent))
             {
-                if (double.TryParse(this._DecimalPortion, out double convertedToDouble))
+                if (!string.IsNullOrWhiteSpace(result))
                 {
-                    var decimalNumResult = ParseWholeNumber(convertedToDouble);
-                    if (!string.IsNullOrWhiteSpace(decimalNumResult))
-                    {
-                        if (convertedToDouble == 1)
-                        {
-                            decimalNumResult += BaseTenHelperMethods.GetBaseTenName(this._DecimalPortion.Length) + "th";
-                        } else
-                        {
-                            decimalNumResult += BaseTenHelperMethods.GetBaseTenName(this._DecimalPortion.Length) + "ths";
-                        }
-
-                        if (string.IsNullOrWhiteSpace(result))
-                        {
-                            result += decimalNumResult;
-                        } else
-                        {
-                            result += $" and {decimalNumResult}";
-                        }
-                    } 
+                    result += $" and {fractionalComponent}";
+                } else 
+                {
+                    result += fractionalComponent;
                 }
             }
 
@@ -86,6 +71,30 @@ namespace Translator.Library
             {
                 return result;
             }
+        }
+
+        private string OutputFractionalComponent()
+        {
+            var result = "";
+            if (!string.IsNullOrWhiteSpace(this._DecimalPortion))
+            {
+                if (double.TryParse(this._DecimalPortion, out double convertedToDouble))
+                {
+                    result = ParseWholeNumber(convertedToDouble);
+                    if (!string.IsNullOrWhiteSpace(result))
+                    {
+                        if (convertedToDouble == 1)
+                        {
+                            result += BaseTenHelperMethods.GetBaseTenName(this._DecimalPortion.Length) + "th";
+                        } else
+                        {
+                            result += BaseTenHelperMethods.GetBaseTenName(this._DecimalPortion.Length) + "ths";
+                        }
+                    } 
+                }
+            }
+
+            return result;
         }
 
         private string ParseWholeNumber(double input, int block_of_thousand = 0)
