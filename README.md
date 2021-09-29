@@ -2,6 +2,13 @@
 
 ![Picture of application](AppPage.png?raw=true)
 
+## Getting up and running
+
+This is built with C# .NET Core 3.1. Once the runtime is installed just dotnet run inside of the Translator.WebMVC folder.
+
+Navigate to http://localhost:5000 and type away :)
+
+
 ## Design Criteria
 
 > #### Test your skills: Number to Words Web Page
