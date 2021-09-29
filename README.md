@@ -1,11 +1,14 @@
 # Number Translator
 
+![Picture of application](AppPage.png?raw=true)
+
+## Design Criteria
+
 > #### Test your skills: Number to Words Web Page
 >Please develop a web page featuring a web server routine that converts numerical input into words and passes these words as a string output parameter.
 >Output example:
 >Input:      “123.45”
 >Output:    “ONE HUNDRED AND TWENTY-THREE DOLLARS AND FORTY-FIVE CENTS”
-
 
 ## Design Considerations
 
