@@ -1,4 +1,4 @@
-# Number Translator
+# Numerical Translator
 
 ![Picture of application](AppPage.png?raw=true)
 
