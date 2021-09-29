@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using NUnit.Framework;
 using Translator.Library;
+using Translator.Library.Models;
 
 namespace Translator.Tests
 {
@@ -25,11 +27,11 @@ namespace Translator.Tests
         [Test]
         [TestCase(1000005, "One Million and Five")]
         [TestCase(1000205, "One Million Two Hundred and Five")]
-        [TestCase(6002205, "Six Million and Two Thousand Two Hundred and Five")]
-        [TestCase(6022205, "Six Million and Twenty-Two Thousand Two Hundred and Five")]
+        [TestCase(6002205, "Six Million Two Thousand Two Hundred and Five")]
+        [TestCase(6022205, "Six Million Twenty-Two Thousand Two Hundred and Five")]
         [TestCase(1000000, "One Million")]
         [TestCase(1000000000, "One Billion")]
-        [TestCase((double)10000000000, "Ten Billion")]
+        [TestCase((double)10000000001, "Ten Billion and One")]
         public void ParseNumberWholeNumber(double input, string expected_output)
         {
             var translator = new NumericalTranslator(input);

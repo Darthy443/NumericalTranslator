@@ -2,6 +2,8 @@
 using Translator.Library.HelperMethods;
 using System.Linq;
 using System.Globalization;
+using System.Collections.Generic;
+using Translator.Library.Models;
 
 namespace Translator.Library
 {
@@ -45,23 +47,13 @@ namespace Translator.Library
             var result = "";
             if (this._WholePortion != 0)
             {
-                var wholeNumResult = ParseWholeNumber(this._WholePortion);
-                if (!string.IsNullOrWhiteSpace(wholeNumResult))
-                {
-                    result += wholeNumResult;
-                }
+                result = OutputWholeComponent();
             }
 
             var fractionalComponent = OutputFractionalComponent();
             if (!string.IsNullOrWhiteSpace(fractionalComponent))
             {
-                if (!string.IsNullOrWhiteSpace(result))
-                {
-                    result += $" and {fractionalComponent}";
-                } else 
-                {
-                    result += fractionalComponent;
-                }
+                result = result.AppendWithSeperator(" and ", fractionalComponent);
             }
 
             if (this._IsNegative)
@@ -71,6 +63,48 @@ namespace Translator.Library
             {
                 return result;
             }
+        }
+
+        private string OutputWholeComponent()
+        {
+            return ParseWholeNumber(this._WholePortion);
+        }
+
+        private string ParseWholeNumber(double number_to_parse)
+        {
+            var numberInThousands = TransformNumberIntoBaseTenThousands(number_to_parse, new List<BaseTenRepresenter>());
+            if (numberInThousands != null)
+            {
+                if (numberInThousands.Count() == 1)
+                {
+                    return numberInThousands[0].GetOutput();
+                } else 
+                {
+                    var output = "";
+                    for(int i = numberInThousands.Count() - 1; i > -1; i--)
+                    {
+                        var number = numberInThousands[i].GetOutput();
+                        if (string.IsNullOrWhiteSpace(number))
+                            continue;
+
+                        if (i == 0)
+                        {
+                            if (numberInThousands[i].Hundred == 0)
+                            {
+                                output =  output.AppendWithSeperator(" and ", number);
+                            } else
+                            {
+                                output =  output.AppendWithSeperator(" ", number);
+                            }
+                        } else
+                        {
+                            output =  output.AppendWithSeperator(" ", number);
+                        }
+                    }
+                    return output;
+                }
+            }
+            return "";
         }
 
         private string OutputFractionalComponent()
@@ -85,10 +119,10 @@ namespace Translator.Library
                     {
                         if (convertedToDouble == 1)
                         {
-                            result += BaseTenHelperMethods.GetBaseTenName(this._DecimalPortion.Length) + "th";
+                            result += " " + BaseTenHelperMethods.GetBaseTenName(this._DecimalPortion.Length) + "th";
                         } else
                         {
-                            result += BaseTenHelperMethods.GetBaseTenName(this._DecimalPortion.Length) + "ths";
+                            result += " " + BaseTenHelperMethods.GetBaseTenName(this._DecimalPortion.Length) + "ths";
                         }
                     } 
                 }
@@ -97,67 +131,23 @@ namespace Translator.Library
             return result;
         }
 
-        private string ParseWholeNumber(double input, int block_of_thousand = 0)
+        private List<BaseTenRepresenter> TransformNumberIntoBaseTenThousands(double input, List<BaseTenRepresenter> output, int block_of_thousand = 0)
         {
+            if (input == 0)
+            {
+                return output;
+            }
+ 
             if (input < 1000)
             {
-                var result = ParseWholeNumberLessThanThousand(input, false);
-                if (!string.IsNullOrWhiteSpace(result))
-                {
-                    return $"{result}{BaseTenHelperMethods.GetBaseTenName(block_of_thousand)}";
-                }
+                output.Add(new BaseTenRepresenter(input, block_of_thousand));
+                return output;
             }
-
-            string chunk = ParseWholeNumberLessThanThousand(input % 1000, true);
-            if (!string.IsNullOrWhiteSpace(chunk))
-            {
-                chunk = " " + chunk + BaseTenHelperMethods.GetBaseTenName(block_of_thousand);
-            }
-            return ParseWholeNumber(input / 1000, block_of_thousand += 3) + chunk;
-        }
-
-        private static string ParseWholeNumberLessThanThousand(double input, bool requires_appending_to_output)
-        {
-            string output = "";
-            switch ((int)input)
-            {
-                case 0:
-                    return "";
-                case var val when input < 10:
-                {
-                    output = $"{BaseTenHelperMethods.GetTensValue(val)}";
-                    break;
-                }
-                case var val when input < 20:
-                {
-                    output = $"{BaseTenHelperMethods.GetTeensValue(val)}";
-                    break;
-                }
-                case var val when input < 100:
-                {
-                    output = BaseTenHelperMethods.GetHundredsValue(val / 10);
-                    var tens = BaseTenHelperMethods.GetTensValue(val % 10);
-
-                    if (!string.IsNullOrWhiteSpace(tens))
-                    {
-                        output += $"-{tens}";
-                    }
-                    break;
-                }
-                case var val when input < 1000:
-                {
-                    return $"{BaseTenHelperMethods.GetTensValue(val / 100)} Hundred " + 
-                                ParseWholeNumberLessThanThousand(val - (100 * (val / 100)), true);
-                }
-                default:
-                    throw new ArgumentException("Invalid number given. This is written to accept < 1000");
-            }
-
-            if (requires_appending_to_output)
-            {
-                output = $"and {output}";
-            }
-            return output;
+            
+            if ((input % 1000) > 0)
+                output.Add(new BaseTenRepresenter(input % 1000, block_of_thousand));
+ 
+            return TransformNumberIntoBaseTenThousands(input / 1000, output, block_of_thousand += 3);
         }
     }
 }

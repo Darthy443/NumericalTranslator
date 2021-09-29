@@ -4,29 +4,50 @@ namespace Translator.Library.HelperMethods
 {
     public static class BaseTenHelperMethods
     {
-        public static string GetBaseTenName(int col_value) => col_value switch
+        // public static string GetBaseTenName(int col_value) => col_value switch
+        // {
+        //     1 => " Ten",
+        //     2 => " Hundred",
+        //     3 => " Thousand",
+        //     4 => " Ten-Thousand",
+        //     5 => " Hundred-Thousand",
+        //     6 => " Million",
+        //     7 => " Ten-Million",
+        //     8 => " Hundred-Million",
+        //     9 => " Billion",
+        //     10 => " Ten-Billion",
+        //     11 => " Hundred-Billion",
+        //     12 => " Trillion",
+        //     13 => " Ten-Trillion",
+        //     14 => " Hundred-Trillion",
+        //     15 => " Quadrillion",
+        //     0 => string.Empty,
+        //     _ => throw new ArgumentException("Value outside of expected range.")
+        // };
+
+        public static string GetBaseTenName(double col_value) => col_value switch
         {
-            1 => " Ten",
-            2 => " Hundred",
-            3 => " Thousand",
-            4 => " Ten-Thousand",
-            5 => " Hundred-Thousand",
-            6 => " Million",
-            7 => " Ten-Million",
-            8 => " Hundred-Million",
-            9 => " Billion",
-            10 => " Ten-Billion",
-            11 => " Hundred-Billion",
-            12 => " Trillion",
-            13 => " Ten-Trillion",
-            14 => " Hundred-Trillion",
-            15 => " Quadrillion",
-            0 => "",
+            1 => "Ten",
+            2 => "Hundred",
+            3 => "Thousand",
+            4 => "Ten-Thousand",
+            5 => "Hundred-Thousand",
+            6 => "Million",
+            7 => "Ten-Million",
+            8 => "Hundred-Million",
+            9 => "Billion",
+            10 => "Ten-Billion",
+            11 => "Hundred-Billion",
+            12 => "Trillion",
+            13 => "Ten-Trillion",
+            14 => "Hundred-Trillion",
+            15 => "Quadrillion",
+            0 => string.Empty,
             _ => throw new ArgumentException("Value outside of expected range.")
         };
 
         
-        public static string GetHundredsValue(int value) => value switch {
+        public static string GetHundredsValue(double value) => value switch {
             1 => "Ten",
             2 => "Twenty",
             3 => "Thirty",
@@ -36,11 +57,11 @@ namespace Translator.Library.HelperMethods
             7 => "Seventy",
             8 => "Eighty",
             9 => "Ninety",
-            0 => "",
-            _ => ""
+            0 => string.Empty,
+            _ => throw new ArgumentException("This method expects just a single digit.")
         };
 
-        public static string GetTeensValue(int teen_value) => teen_value switch
+        public static string GetTeensValue(double teen_value) => teen_value switch
         {
             10 => "Ten",
             11 => "Eleven",
@@ -55,7 +76,7 @@ namespace Translator.Library.HelperMethods
             _ => throw new ArgumentException("Unexpected value. This should be given a number from 10 -> 19")
         };
 
-        public static string GetTensValue(int number) => number switch
+        public static string GetTensValue(double number) => number switch
         {
             1 => "One",
             2 => "Two",
