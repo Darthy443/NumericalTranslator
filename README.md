@@ -29,13 +29,12 @@ Currently the application has been restricted to a 15 digit number to keep the a
 
 ## Code Flow
 
-This routine has been designed to try and break up a double into it's base10 *thousands* components. When split into thousands, if the first number exists it will *always* semantically be n 'Hundred' and then you can just calculate the hundreds & tens remainder. This group can then be given a token for which 'thousands' block it is which calls the BaseTenHelperMethods.GetBaseTenName() method to get the string name.
+This routine has been designed to try and break up a double into it's base10 *thousands* components. When split into thousands, if the first number exists it will *always* semantically be n 'Hundred' and then you can just calculate the hundreds & tens remainder. This group can then be given a token for which 'thousands' block it is to call the BaseTenHelperMethods.GetBaseTenName() method to get the string representation name.
 
 ![Visually explaining NumberParser](NumberParser.png?raw=true)
 
 This code can then live completely free of the Parser and still return a correct result *(single/multi-threaded, multi-device etc).*
-The parser then just calls itself recursively to break the number down into these *thousands* components and compile the string result. This recursion did have an unfortunate by-product of being unable to correctly independtly combine after its second iteration.
-**1 100 100** would be expected to return One Million One Hundred Thousand and One Hundred. But my attempts at correctly joining these strings through the parsers would output One Million **and** One Hundred Thousand and One Hundred - which I was not happy with. To get around this I added another parameter to *ParseWholeNumberLessThanThousand()* method so it could return the right response. This probably isn't ideal as now its internals are tied to its output. It would be much better to just fix the caller *ParseWholeNumber* however I am just a little short on time :(
+The parser then just calls itself recursively to break the number down into these *thousands* components and return the number as its BaseTen chunks of thousand.
 
 This could has been written as a single static method and just working through the number one unit at a time, modifying the return string as it progresses. However I didn't like that this would then tie the implementation to the output. Alternatively my class could possibly be expanded upon by converting it to an abstract class with an abstract GetOutput() method. This could then be inherited to provide an alternative output for currency?
 
